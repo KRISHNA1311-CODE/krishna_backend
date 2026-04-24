@@ -21,11 +21,9 @@ const PORT = process.env.PORT || 3001;
 
 // --- CONFIG & VALIDATION ---
 const MONGODB_URI = process.env.MONGODB_URI;
-const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_key";
-const RAZORPAY_KEY_ID =
-  process.env.RAZORPAY_KEY_ID || "rzp_test_Scs20M8ztG7ipd";
-const RAZORPAY_KEY_SECRET =
-  process.env.RAZORPAY_KEY_SECRET || "V06vDOvRKmlaEVFoGbsNfvdR";
+const JWT_SECRET = process.env.JWT_SECRET;
+const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;
 
 if (!MONGODB_URI)
   console.warn("⚠️ MONGODB_URI missing. Database will not function.");
@@ -199,15 +197,25 @@ app.post(
   }),
 );
 
+app.patch("/api/orders/:id", async (req, res) => {
+  const result = await Order.updateOne(
+    { _id: req.params.id },
+    {
+      ...req.body,
+    },
+  );
+  res.json(result);
+});
+
 // --- NOTIFICATIONS ---
 
 app.post(
   "/api/notifications/telegram",
   asyncHandler(async (req, res) => {
+    console.log("telegram");
     const { message } = req.body;
     const { TELEGRAM_BOT_TOKEN: token, TELEGRAM_CHAT_ID: chat_id } =
       process.env;
-
     if (!token || !chat_id) {
       console.log("Telegram Log:", message);
       return res.json({ status: "mock_sent" });
