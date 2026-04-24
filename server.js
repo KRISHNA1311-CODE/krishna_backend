@@ -30,7 +30,9 @@ if (!MONGODB_URI)
 
 // --- MIDDLEWARE ---
 app.use(helmet()); // Basic security headers
-app.use(cors({ origin: process.env.CLIENT_URL || "*" }));
+app.use(
+  cors({ origin: process.env.CLIENT_URL.split(",") || "*", credentials: true }),
+);
 app.use(express.json());
 
 // Helper for cleaner async routes
